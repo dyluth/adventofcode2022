@@ -55,7 +55,7 @@ type Elf struct {
 }
 
 func (e Elf) Value() int {
-	return fruitpicker.SumList[int](e.carrying)
+	return fruitpicker.SumList(e.carrying)
 }
 
 //func findH
