@@ -8,6 +8,14 @@ type Number interface {
 	constraints.Float | constraints.Integer
 }
 
+func Map[T any](t []T, f func(T) T) []T {
+	r := make([]T, len(t))
+	for i := range t {
+		r[i] = f(t[i])
+	}
+	return r
+}
+
 func Reduce[T any](t []T, f func(T) int) int {
 	total := 0
 	for _, v := range t {
