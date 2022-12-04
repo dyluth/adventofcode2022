@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/dyluth/adventofcode2022/fruitpicker"
@@ -14,48 +13,31 @@ func main() {
 }
 
 func part2() int {
-	elves := fruitpicker.Load(func(s string) Elf {
-		return Elf{
-			carrying: fruitpicker.ConvertStringsToInts(strings.Split(s, "\n")),
-		}
+	elves := fruitpicker.Load(func(s string) int {
+		return fruitpicker.SumList(fruitpicker.ConvertStringsToInts(strings.Split(s, "\n")))
 	}, true)
 
-	largest := fruitpicker.Largest[int](elves)
-	sum := largest.Value()
+	largest, index := fruitpicker.Largest(elves)
+	sum := largest
 	// remove that elf
-	elves = fruitpicker.Select(elves, func(e Elf) bool {
-		return !reflect.DeepEqual(largest, e)
-	})
+	elves = append(elves[0:index], elves[index+1:]...)
 
-	largest = fruitpicker.Largest[int](elves)
-	sum += largest.Value()
-	elves = fruitpicker.Select(elves, func(e Elf) bool {
-		return !reflect.DeepEqual(largest, e)
-	})
-	largest = fruitpicker.Largest[int](elves)
-	sum += largest.Value()
+	largest, index = fruitpicker.Largest(elves)
+	sum += largest
+	// remove that elf
+	elves = append(elves[0:index], elves[index+1:]...)
+
+	largest, _ = fruitpicker.Largest(elves)
+	sum += largest
 
 	return sum
-
 }
 
 func part1() int {
-	elves := fruitpicker.Load(func(s string) Elf {
-		return Elf{
-			carrying: fruitpicker.ConvertStringsToInts(strings.Split(s, "\n")),
-		}
+	elves := fruitpicker.Load(func(s string) int {
+		return fruitpicker.SumList(fruitpicker.ConvertStringsToInts(strings.Split(s, "\n")))
 	}, true)
 
-	e := fruitpicker.Largest[int, Elf](elves)
-	return e.Value()
+	largest, _ := fruitpicker.Largest(elves)
+	return largest
 }
-
-type Elf struct {
-	carrying []int
-}
-
-func (e Elf) Value() int {
-	return fruitpicker.SumList(e.carrying)
-}
-
-//func findH

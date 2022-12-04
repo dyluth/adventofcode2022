@@ -16,35 +16,48 @@ func Map[T, S any](t []T, f func(T) S) []S {
 	return r
 }
 
-func Reduce[T, S any](t []T, accumulator S, f func(T, S) S) S {
-	for _, v := range t {
-		accumulator = f(v, accumulator)
+func Reduce[T, S any](t []T, accumulator S, f func(T, S, int) S) S {
+	for i, v := range t {
+		accumulator = f(v, accumulator, i)
 	}
 	return accumulator
 }
 
 // add up a list
 func SumList[T Number](in []T) (total T) {
-	sum := func(a T, b T) T {
-		return a + b
-	}
-	return Reduce(in, 0, sum)
+	return Reduce(in, 0, func(cur, acc T, i int) T {
+		return cur + acc
+	})
 }
 
-type ValueAble[T Number] interface {
-	Value() T
-}
-
-func Largest[T Number, S ValueAble[T]](in []S) (most S) {
+func Largest[T Number](in []T) (T, int) {
 	if len(in) == 0 {
 		panic("wtf, 0 length slice?")
 	}
-	return Reduce(in, in[0], func(cur, acc S) S {
-		if cur.Value() > acc.Value() {
+	var index int
+	largest := Reduce(in, in[0], func(cur, acc T, i int) T {
+		if cur > acc {
+			index = i
 			return cur
 		}
 		return acc
 	})
+	return largest, index
+}
+
+func Smallest[T Number](in []T) (T, int) {
+	if len(in) == 0 {
+		panic("wtf, 0 length slice?")
+	}
+	var index int
+	largest := Reduce(in, in[0], func(cur, acc T, i int) T {
+		if cur < acc {
+			index = i
+			return cur
+		}
+		return acc
+	})
+	return largest, index
 }
 
 func Select[T any](in []T, f func(i T) bool) (out []T) {

@@ -14,7 +14,7 @@ func main() {
 
 func part1() int {
 	pairs := fruitpicker.Load(NewPair, false)
-	return fruitpicker.Reduce(pairs, 0, func(p Pair, acc int) int {
+	return fruitpicker.Reduce(pairs, 0, func(p Pair, acc, i int) int {
 		if p.IsContained() {
 			return acc + 1
 		}
@@ -24,7 +24,7 @@ func part1() int {
 
 func part2() int {
 	pairs := fruitpicker.Load(NewPair, false)
-	return fruitpicker.Reduce(pairs, 0, func(p Pair, acc int) int {
+	return fruitpicker.Reduce(pairs, 0, func(p Pair, acc, i int) int {
 		if p.Overlap() {
 			return acc + 1
 		}
