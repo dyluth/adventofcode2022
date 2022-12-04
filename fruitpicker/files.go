@@ -11,7 +11,7 @@ var LoadStringOverride = ""
 
 func Load[T any](convert func(string) T, grouped bool) []T {
 	out := []T{}
-	loaded := []string{}
+	var loaded []string
 	if grouped {
 		loaded = ReadGroupedInput()
 	} else {

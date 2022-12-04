@@ -31,15 +31,15 @@ func SumList[T Number](in []T) (total T) {
 	return Reduce(in, 0, sum)
 }
 
-type ValueAble interface {
-	Value() int
+type ValueAble[T Number] interface {
+	Value() T
 }
 
-func Largest[T ValueAble](in []T) (most T) {
+func Largest[T Number, S ValueAble[T]](in []S) (most S) {
 	if len(in) == 0 {
 		panic("wtf, 0 length slice?")
 	}
-	return Reduce(in, in[0], func(cur, acc T) T {
+	return Reduce(in, in[0], func(cur, acc S) S {
 		if cur.Value() > acc.Value() {
 			return cur
 		}

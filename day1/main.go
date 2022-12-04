@@ -20,19 +20,19 @@ func part2() int {
 		}
 	}, true)
 
-	largest := fruitpicker.Largest(elves)
+	largest := fruitpicker.Largest[int](elves)
 	sum := largest.Value()
 	// remove that elf
 	elves = fruitpicker.Select(elves, func(e Elf) bool {
 		return !reflect.DeepEqual(largest, e)
 	})
 
-	largest = fruitpicker.Largest(elves)
+	largest = fruitpicker.Largest[int](elves)
 	sum += largest.Value()
 	elves = fruitpicker.Select(elves, func(e Elf) bool {
 		return !reflect.DeepEqual(largest, e)
 	})
-	largest = fruitpicker.Largest(elves)
+	largest = fruitpicker.Largest[int](elves)
 	sum += largest.Value()
 
 	return sum
@@ -46,7 +46,7 @@ func part1() int {
 		}
 	}, true)
 
-	e := fruitpicker.Largest(elves)
+	e := fruitpicker.Largest[int, Elf](elves)
 	return e.Value()
 }
 

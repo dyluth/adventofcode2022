@@ -14,24 +14,22 @@ func main() {
 
 func part1() int {
 	pairs := fruitpicker.Load(NewPair, false)
-	count := fruitpicker.Reduce(pairs, func(p Pair) int {
+	return fruitpicker.Reduce(pairs, 0, func(p Pair, acc int) int {
 		if p.IsContained() {
-			return 1
+			return acc + 1
 		}
-		return 0
+		return acc
 	})
-	return count
 }
 
 func part2() int {
 	pairs := fruitpicker.Load(NewPair, false)
-	count := fruitpicker.Reduce(pairs, func(p Pair) int {
+	return fruitpicker.Reduce(pairs, 0, func(p Pair, acc int) int {
 		if p.Overlap() {
-			return 1
+			return acc + 1
 		}
-		return 0
+		return acc
 	})
-	return count
 }
 
 type Pair struct {
