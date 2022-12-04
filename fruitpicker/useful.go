@@ -8,28 +8,27 @@ type Number interface {
 	constraints.Float | constraints.Integer
 }
 
-func Map[T any](t []T, f func(T) T) []T {
-	r := make([]T, len(t))
+func Map[T, S any](t []T, f func(T) S) []S {
+	r := make([]S, len(t))
 	for i := range t {
 		r[i] = f(t[i])
 	}
 	return r
 }
 
-func Reduce[T any](t []T, f func(T) int) int {
-	total := 0
+func Reduce[T, S any](t []T, accumulator S, f func(T, S) S) S {
 	for _, v := range t {
-		total += f(v)
+		accumulator = f(v, accumulator)
 	}
-	return total
+	return accumulator
 }
 
 // add up a list
 func SumList[T Number](in []T) (total T) {
-	for i := range in {
-		total = total + in[i]
+	sum := func(a T, b T) T {
+		return a + b
 	}
-	return total
+	return Reduce(in, 0, sum)
 }
 
 type ValueAble interface {
@@ -37,14 +36,15 @@ type ValueAble interface {
 }
 
 func Largest[T ValueAble](in []T) (most T) {
-	val := 0
-	for _, v := range in {
-		if v.Value() > val {
-			val = v.Value()
-			most = v
-		}
+	if len(in) == 0 {
+		panic("wtf, 0 length slice?")
 	}
-	return most
+	return Reduce(in, in[0], func(cur, acc T) T {
+		if cur.Value() > acc.Value() {
+			return cur
+		}
+		return acc
+	})
 }
 
 func Select[T any](in []T, f func(i T) bool) (out []T) {
