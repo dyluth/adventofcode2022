@@ -8,6 +8,14 @@ type Number interface {
 	constraints.Float | constraints.Integer
 }
 
+func Reduce[T any](t []T, f func(T) int) int {
+	total := 0
+	for _, v := range t {
+		total += f(v)
+	}
+	return total
+}
+
 // add up a list
 func SumList[T Number](in []T) (total T) {
 	for i := range in {
