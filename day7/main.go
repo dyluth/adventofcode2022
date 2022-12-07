@@ -12,36 +12,40 @@ var debug = true
 
 func main() {
 	fmt.Println(part1())
-	// not  1405252 - too low
-	// wft  1478292
-	//Al's  1749646
-	//        71943
-
+	fmt.Println(part2())
 }
 
 func part1() int {
 	root := structure(fruitpicker.ReadInput())
-	if debug {
-		//root.print(0)
-	}
-	sizes := make(map[string]int)
-	root.calculateSizes(sizes)
+	sizes := root.calculateSizes()
 	total := 0
 	for k := range sizes {
-		small := ""
 		if sizes[k] <= 100000 {
 			total += sizes[k]
-			small = " <==="
-		}
-		if debug {
-			fmt.Printf("%v %v%v\n", k, sizes[k], small)
 		}
 	}
-	s := sizes["/"]
-	fmt.Println(s) // total size
-	//  48381165
 	fmt.Println(total)
 	return total
+}
+
+func part2() int {
+	root := structure(fruitpicker.ReadInput())
+	consumed := root.calculateSize()
+	free := 70000000 - consumed
+	minimalToDelete := 30000000 - free
+
+	// 70000000
+	// need 30000000
+
+	sizes := root.calculateSizes()
+	smallest := consumed
+	fmt.Printf("consumed: %v\n free: %v\nneed to free up %v\n", consumed, free, minimalToDelete)
+	for k := range sizes {
+		if sizes[k] > minimalToDelete && sizes[k] < smallest {
+			smallest = sizes[k]
+		}
+	}
+	return smallest
 }
 
 type dir struct {
@@ -61,21 +65,25 @@ func (d *dir) print(indent int) {
 	}
 }
 
-func (d *dir) calculateSizes(m map[string]int) int {
-	total := 0
-	for _, v := range d.dirs {
-		total += v.calculateSizes(m)
+func (d *dir) calculateSize() int {
+	s := 0
+	for _, c := range d.dirs {
+		s += c.calculateSize()
 	}
-
 	for _, f := range d.files {
-		total += f.size
+		s += f.size
 	}
-	_, ok := m[d.name]
-	if ok {
-		panic("duplicate filename!!")
+	return s
+}
+
+func (d *dir) calculateSizes() []int {
+	s := d.calculateSize()
+	sizes := []int{}
+	for _, c := range d.dirs {
+		sizes = append(sizes, c.calculateSizes()...)
 	}
-	m[d.name] = total
-	return total
+	sizes = append(sizes, s)
+	return sizes
 }
 
 type file struct {
@@ -120,7 +128,6 @@ func structure(lines []string) dir {
 	root := NewDir("$ cd /", nil)
 	currentDir := root
 	for i := 1; i < len(lines); i++ {
-		fmt.Printf(" %v ", i)
 		// new command
 		f := strings.Fields(lines[i])
 		if f[0] == "$" {
@@ -142,7 +149,6 @@ func structure(lines []string) dir {
 					if i+1 == len(lines) {
 						break // dont go off the end
 					}
-					fmt.Printf(" %v ", i+1)
 					split := strings.Fields(lines[i+1])
 					if split[0] == "$" {
 						break
@@ -158,7 +164,5 @@ func structure(lines []string) dir {
 
 		}
 	}
-	fmt.Printf("\n")
-
 	return *root
 }
